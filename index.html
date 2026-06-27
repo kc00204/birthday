@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎂 8月生日飯局 · 大家幾時得閒？</title>
+<style>
+  :root{
+    --bg:#fff7f2; --card:#ffffff; --ink:#2b2b33; --muted:#8a8a96;
+    --line:#f0e3da; --accent:#ff7a59; --accent2:#ffd27a; --good:#37b86b;
+    --hk:#ff7a59; --kln:#5b8def; --nt:#37b86b;
+    --shadow:0 6px 22px rgba(0,0,0,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang HK","Segoe UI",sans-serif;
+    color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;
+    background-color:var(--bg);position:relative;overflow-x:hidden}
+  /* floating sticker background layer */
+  #bgstickers{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  #bgstickers span{position:absolute;opacity:.16;filter:saturate(1.1);
+    animation:floaty linear infinite;will-change:transform}
+  @keyframes floaty{
+    0%{transform:translateY(0) rotate(var(--rot))}
+    50%{transform:translateY(-16px) rotate(calc(var(--rot) + 6deg))}
+    100%{transform:translateY(0) rotate(var(--rot))}
+  }
+  @media (prefers-reduced-motion: reduce){ #bgstickers span{animation:none} }
+  .wrap{max-width:760px;margin:0 auto;padding:18px 16px 80px;position:relative;z-index:1}
+  header{text-align:center;padding:8px 0 6px}
+  h1{font-size:24px;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:14px;margin:0}
+  /* Leo zodiac badge */
+  .leo-badge{display:inline-flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:6px}
+  .leo-ring{width:88px;height:88px;border-radius:50%;
+    background:radial-gradient(circle at 30% 25%, #fff3d6, #ffd27a 55%, #ff9e4f 100%);
+    box-shadow:0 6px 18px rgba(255,158,79,.45), inset 0 0 0 3px rgba(255,255,255,.6);
+    display:flex;align-items:center;justify-content:center;position:relative}
+  .leo-ring svg{width:54px;height:54px}
+  .leo-ring::after{content:"";position:absolute;inset:-7px;border-radius:50%;
+    border:2px dashed rgba(255,158,79,.5);animation:spin 28s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .leo-name{font-size:12px;font-weight:800;letter-spacing:1px;color:#d9772e;
+    background:#fff3d6;padding:2px 12px;border-radius:999px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:18px;margin:16px 0;box-shadow:var(--shadow)}
+  h2{font-size:18px;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+  .hint{color:var(--muted);font-size:13px;margin:0 0 14px}
+  label{font-size:14px;font-weight:600;display:block;margin:10px 0 6px}
+  input[type=text],input[type=email],select,textarea{
+    width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:12px;
+    font-size:15px;font-family:inherit;background:#fff;color:var(--ink)}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent2);border-color:transparent}
+  .btn{appearance:none;border:none;border-radius:12px;padding:12px 18px;font-size:15px;
+    font-weight:700;cursor:pointer;background:var(--accent);color:#fff;transition:transform .06s ease, opacity .2s}
+  .btn:active{transform:scale(.97)}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .btn.good{background:var(--good)}
+  .btn.block{width:100%;margin-top:8px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>*{flex:1;min-width:0}
+  /* calendar */
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:8px}
+  .dow{text-align:center;font-size:12px;color:var(--muted);font-weight:700;padding:2px 0}
+  .day{position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:12px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    cursor:pointer;font-size:14px;user-select:none;background:#fff;transition:.15s}
+  .day.empty{border:none;background:transparent;cursor:default}
+  .day.sel{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+  .day .cnt{font-size:10px;position:absolute;bottom:4px;color:var(--good);font-weight:700}
+  .day.sel .cnt{color:#fff}
+  .day.weekend{background:#fff6ef}
+  .day.sel.weekend{background:var(--accent)}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:4px 10px;
+    border-radius:999px;background:#fff;border:1px solid var(--line);margin:3px 4px 0 0;color:var(--muted)}
+  .seg{display:flex;gap:6px;flex-wrap:wrap}
+  .seg button{flex:1;min-width:70px;padding:9px;border:1px solid var(--line);background:#fff;
+    border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink)}
+  .seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chips button{padding:8px 12px;border:1px solid var(--line);background:#fff;border-radius:999px;
+    font-size:13px;cursor:pointer;color:var(--ink)}
+  .chips button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .results{margin-top:6px}
+  .barrow{display:flex;align-items:center;gap:10px;margin:6px 0}
+  .barlbl{width:62px;font-size:13px;color:var(--muted);flex-shrink:0}
+  .bartrack{flex:1;background:#f3ece6;border-radius:999px;height:22px;overflow:hidden}
+  .barfill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));
+    display:flex;align-items:center;justify-content:flex-end;padding-right:8px;color:#fff;
+    font-size:12px;font-weight:700;border-radius:999px;min-width:24px;transition:width .4s}
+  .barrow.top .barfill{background:linear-gradient(90deg,#9be8b6,var(--good))}
+  .who{font-size:12px;color:var(--muted)}
+  .region-tabs{display:flex;gap:6px;margin-bottom:12px}
+  .region-tabs button{flex:1;padding:10px;border:1px solid var(--line);background:#fff;
+    border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;color:var(--ink)}
+  .region-tabs button[data-r=hk].on{background:var(--hk);color:#fff;border-color:var(--hk)}
+  .region-tabs button[data-r=kln].on{background:var(--kln);color:#fff;border-color:var(--kln)}
+  .region-tabs button[data-r=nt].on{background:var(--nt);color:#fff;border-color:var(--nt)}
+  .resto{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0}
+  .resto .nm{font-weight:700;font-size:15px}
+  .resto .meta{font-size:13px;color:var(--muted);margin-top:2px}
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;
+    background:#fff3ec;color:var(--accent);margin-right:5px;font-weight:600}
+  .note{background:#fffaf3;border:1px dashed var(--accent2);border-radius:12px;padding:10px 12px;
+    font-size:13px;color:#7a6a4a;margin-top:10px}
+  .footer{text-align:center;color:var(--muted);font-size:12px;margin-top:24px}
+  .save-bar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,247,242,.95);
+    backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px 16px;
+    display:flex;gap:10px;max-width:760px;margin:0 auto}
+  .save-bar .btn{flex:1}
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--ink);
+    color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;
+    transition:opacity .25s;z-index:50}
+  .toast.show{opacity:1}
+  details summary{cursor:pointer;font-weight:700;font-size:15px;padding:6px 0}
+  .small{font-size:12px;color:var(--muted)}
+  a.link{color:var(--accent);font-weight:600;text-decoration:none}
+</style>
+</head>
+<body>
+<div id="bgstickers" aria-hidden="true"></div>
+<div class="wrap">
+  <header>
+    <div class="leo-badge">
+      <div class="leo-ring" title="獅子座 Leo ♌ · 7/23–8/22">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="Leo">
+          <!-- Leo glyph ♌ -->
+          <g fill="none" stroke="#b45309" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="24" cy="30" r="11"/>
+            <path d="M35 30 C 41 16, 30 10, 26 18 C 23 24, 28 30, 35 33 C 44 37, 47 28, 45 22"/>
+            <path d="M45 22 a3 3 0 1 0 0.1 0"/>
+          </g>
+        </svg>
+      </div>
+      <span class="leo-name">♌ 獅子座 LEO · 8月壽星</span>
+    </div>
+    <h1>🎂 8月生日飯局</h1>
+    <p class="sub">大家撳一撳得閒嘅日子，自動睇邊日最多人 · 2026年8月</p>
+    <p class="sub" style="margin-top:4px">🦁 屬於獅子座壽星嘅閃亮慶祝 ✨</p>
+  </header>
+
+  <!-- STEP 1: name -->
+  <div class="card">
+    <h2>👋 你係邊位？</h2>
+    <p class="hint">先填個名，之後揀日子同口味都會記住你。同一部機/瀏覽器會自動記得。</p>
+    <input type="text" id="myName" placeholder="例如：阿明 / Amy" autocomplete="off">
+  </div>
+
+  <!-- STEP 2: calendar voting -->
+  <div class="card">
+    <h2>📅 撳你得閒嘅日子</h2>
+    <p class="hint">撳低你 8 月得閒嘅日子（可揀多日）。綠色數字 = 幾多人得閒。</p>
+    <div class="cal" id="dows"></div>
+    <div class="cal" id="cal"></div>
+    <div style="margin-top:10px">
+      <span class="pill">🟧 你揀咗</span>
+      <span class="pill">🟩 數字 = 得閒人數</span>
+    </div>
+  </div>
+
+  <!-- STEP 3: taste -->
+  <div class="card">
+    <h2>🍜 你嘅口味</h2>
+    <p class="hint">揀你鍾意嘅菜系（可多選），等大家夾到啱口味嘅餐廳。</p>
+
+    <label>鍾意食咩菜？</label>
+    <div class="chips" id="cuisines"></div>
+
+    <label>口味濃淡</label>
+    <div class="seg" id="strength">
+      <button data-v="淡口味">😌 淡口味</button>
+      <button data-v="中等">🙂 中等</button>
+      <button data-v="重口味">😋 重口味</button>
+    </div>
+
+    <label>辣度</label>
+    <div class="seg" id="spice">
+      <button data-v="不辣">🚫 不辣</button>
+      <button data-v="小辣">🌶️ 小辣</button>
+      <button data-v="中辣">🌶️🌶️ 中辣</button>
+      <button data-v="大辣">🌶️🌶️🌶️ 大辣</button>
+    </div>
+
+    <label>有冇敏感 / 唔食嘅嘢？（自由填）</label>
+    <input type="text" id="diet" placeholder="例如：唔食牛、海鮮敏感、素食…" autocomplete="off">
+  </div>
+
+  <!-- save bar handled below -->
+
+  <!-- RESULTS -->
+  <div class="card">
+    <h2>📊 大家邊日得閒</h2>
+    <p class="hint">即時統計。最多人得閒嗰日會綠色標示。</p>
+    <div class="results" id="dayResults"><p class="small">未有人揀日子。</p></div>
+  </div>
+
+  <div class="card">
+    <h2>😋 大家口味總覽</h2>
+    <div class="results" id="tasteResults"><p class="small">未有人填口味。</p></div>
+  </div>
+
+  <!-- RESTAURANTS -->
+  <div class="card">
+    <h2>🍽️ 餐廳建議（分區）</h2>
+    <div class="region-tabs">
+      <button data-r="hk" class="on">🏙️ 香港島</button>
+      <button data-r="kln">🌆 九龍</button>
+      <button data-r="nt">🌳 新界</button>
+    </div>
+    <div id="restoList"></div>
+    <div class="note">💡 呢啲只係建議方向，實際揀邊間可以喺最多人得閒嗰日再夾。</div>
+  </div>
+
+  <!-- CONFIRM + EMAIL + CALENDAR -->
+  <div class="card">
+    <h2>✅ 落實飯局 · 出邀請</h2>
+    <p class="hint">夾好日子之後，喺度確認，就可以一鍵開 email 通知大家，同埋加落 Google Calendar。</p>
+    <div class="row">
+      <div>
+        <label>飯局日期</label>
+        <select id="finalDate"></select>
+      </div>
+      <div>
+        <label>時間</label>
+        <select id="finalTime">
+          <option>12:00 午餐</option>
+          <option>13:00 午餐</option>
+          <option selected>19:00 晚餐</option>
+          <option>19:30 晚餐</option>
+          <option>20:00 晚餐</option>
+        </select>
+      </div>
+    </div>
+    <label>餐廳 / 地點</label>
+    <input type="text" id="finalPlace" placeholder="例如：xxx餐廳（銅鑼灣）">
+    <label>邀請對象 email（用逗號分隔，選填）</label>
+    <input type="email" id="finalEmails" placeholder="amy@example.com, ken@example.com">
+    <div class="row" style="margin-top:14px">
+      <button class="btn block" id="btnEmail">📧 一鍵開 Email 邀請</button>
+      <button class="btn good block" id="btnCal">📆 加落 Google Calendar</button>
+    </div>
+    <button class="btn ghost block" id="btnIcs">⬇️ 下載 .ics（Apple/Outlook 行事曆）</button>
+  </div>
+
+  <details class="card">
+    <summary>🔗 點樣 share 俾朋友？</summary>
+    <p class="small" style="margin-top:10px">
+      1. 將呢個 <b>.html 檔案</b>放上任何免費空間（例如 <a class="link" href="https://pages.github.com" target="_blank">GitHub Pages</a>、Netlify Drop、Google Drive 分享），就有條 link 可以 send 俾朋友。<br><br>
+      2. 朋友開咗之後撳 <b>Bookmark / 加入主畫面</b> 就隨時返嚟睇。<br><br>
+      3. ⚠️ 注意：因為係免費純前端，每人嘅選擇係存喺<b>佢自己部機</b>。想大家睇到同一份結果，可以叫朋友揀完之後撳「📤 複製我嘅選擇」send 返俾你，你再撳「📥 貼上夾埋」就會合併。
+    </p>
+    <div class="row" style="margin-top:10px">
+      <button class="btn ghost block" id="btnExport">📤 複製我嘅選擇</button>
+      <button class="btn ghost block" id="btnImport">📥 貼上夾埋</button>
+    </div>
+  </details>
+
+  <p class="footer">純前端 · 免費 · 資料存喺你部機 · 可 Bookmark 🔖</p>
+</div>
+
+<div class="save-bar">
+  <button class="btn good" id="btnSave">💾 儲存我嘅選擇</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- floating background stickers (cakes + emotional value + Leo) ----
+  (function stickers(){
+    const set=["🎂","🧁","🎉","🎈","💛","✨","🥳","🍰","🎁","🌟","🦁","♌","💖","🥂","🎊","🌻"];
+    const layer=document.getElementById("bgstickers");
+    if(!layer) return;
+    const n=26;
+    for(let i=0;i<n;i++){
+      const s=document.createElement("span");
+      s.textContent=set[i%set.length];
+      const size=20+Math.random()*36;
+      s.style.fontSize=size+"px";
+      s.style.left=(Math.random()*98)+"%";
+      s.style.top=(Math.random()*98)+"%";
+      s.style.setProperty("--rot",(Math.random()*40-20)+"deg");
+      s.style.animationDuration=(7+Math.random()*9)+"s";
+      s.style.animationDelay=(-Math.random()*8)+"s";
+      s.style.opacity=(0.10+Math.random()*0.14).toFixed(2);
+      layer.appendChild(s);
+    }
+  })();
+
+  const KEY = "aug-bday-2026";
+  const YEAR = 2026, MONTH = 8; // August
+  const DOW = ["日","一","二","三","四","五","六"];
+  const CUISINES = ["泰國菜","日本菜","Omakase 廚師發辦","中菜","韓國菜","越南菜",
+    "印度菜","意大利菜","法國菜","美式/扒房","Fusion 創意菜","火鍋/打邊爐",
+    "麥當勞","KFC","其他快餐"];
+
+  // ---- state ----
+  // store = { people: { name: {days:[...], cuisines:[...], strength, spice, diet} } }
+  let store = load();
+  let me = { name:"", days:[], cuisines:[], strength:"", spice:"", diet:"" };
+
+  function load(){
+    try{ return JSON.parse(localStorage.getItem(KEY)) || {people:{}, final:{}}; }
+    catch(e){ return {people:{}, final:{}}; }
+  }
+  function persist(){ localStorage.setItem(KEY, JSON.stringify(store)); }
+  function toast(msg){
+    const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+    clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1800);
+  }
+
+  // ---- build calendar ----
+  const dowsEl=document.getElementById("dows");
+  DOW.forEach(d=>{ const e=document.createElement("div"); e.className="dow"; e.textContent=d; dowsEl.appendChild(e); });
+
+  const calEl=document.getElementById("cal");
+  const firstDow = new Date(YEAR, MONTH-1, 1).getDay();
+  const daysInMonth = new Date(YEAR, MONTH, 0).getDate();
+
+  function dayCount(d){
+    let n=0;
+    for(const p in store.people){ if((store.people[p].days||[]).includes(d)) n++; }
+    return n;
+  }
+
+  function renderCal(){
+    calEl.innerHTML="";
+    for(let i=0;i<firstDow;i++){ const e=document.createElement("div"); e.className="day empty"; calEl.appendChild(e); }
+    for(let d=1; d<=daysInMonth; d++){
+      const e=document.createElement("div");
+      const wd = new Date(YEAR,MONTH-1,d).getDay();
+      e.className="day"+((wd===0||wd===6)?" weekend":"")+(me.days.includes(d)?" sel":"");
+      const num=document.createElement("span"); num.textContent=d; e.appendChild(num);
+      const c=dayCount(d);
+      if(c>0){ const cc=document.createElement("span"); cc.className="cnt"; cc.textContent="👤"+c; e.appendChild(cc); }
+      e.onclick=()=>{
+        const i=me.days.indexOf(d);
+        if(i>=0) me.days.splice(i,1); else me.days.push(d);
+        renderCal();
+      };
+      calEl.appendChild(e);
+    }
+  }
+
+  // ---- cuisines ----
+  const cuEl=document.getElementById("cuisines");
+  CUISINES.forEach(c=>{
+    const b=document.createElement("button"); b.textContent=c;
+    b.onclick=()=>{ const i=me.cuisines.indexOf(c); if(i>=0)me.cuisines.splice(i,1);else me.cuisines.push(c);
+      b.classList.toggle("on"); };
+    b.dataset.v=c; cuEl.appendChild(b);
+  });
+
+  function seg(id, set){
+    document.querySelectorAll("#"+id+" button").forEach(b=>{
+      b.onclick=()=>{ document.querySelectorAll("#"+id+" button").forEach(x=>x.classList.remove("on"));
+        b.classList.add("on"); set(b.dataset.v); };
+    });
+  }
+  seg("strength", v=>me.strength=v);
+  seg("spice", v=>me.spice=v);
+
+  // ---- load my saved data ----
+  function loadMine(name){
+    const p = store.people[name];
+    if(p){ me={name, days:[...(p.days||[])], cuisines:[...(p.cuisines||[])],
+      strength:p.strength||"", spice:p.spice||"", diet:p.diet||""}; }
+    else { me={name, days:[], cuisines:[], strength:"", spice:"", diet:""}; }
+    // reflect UI
+    document.getElementById("diet").value=me.diet;
+    document.querySelectorAll("#cuisines button").forEach(b=>b.classList.toggle("on",me.cuisines.includes(b.dataset.v)));
+    document.querySelectorAll("#strength button").forEach(b=>b.classList.toggle("on",b.dataset.v===me.strength));
+    document.querySelectorAll("#spice button").forEach(b=>b.classList.toggle("on",b.dataset.v===me.spice));
+    renderCal();
+  }
+
+  const nameEl=document.getElementById("myName");
+  // remember last name on this device
+  const lastName = localStorage.getItem(KEY+"-me");
+  if(lastName){ nameEl.value=lastName; loadMine(lastName); }
+  nameEl.addEventListener("change", ()=>{ const n=nameEl.value.trim(); if(n) loadMine(n); });
+
+  document.getElementById("diet").addEventListener("input", e=>me.diet=e.target.value);
+
+  // ---- save ----
+  function saveMe(){
+    const n=nameEl.value.trim();
+    if(!n){ toast("⚠️ 請先填名"); nameEl.focus(); return false; }
+    me.name=n;
+    store.people[n]={days:[...me.days],cuisines:[...me.cuisines],strength:me.strength,spice:me.spice,diet:me.diet};
+    persist(); localStorage.setItem(KEY+"-me", n);
+    renderResults(); renderCal(); renderFinalDates();
+    toast("💾 已儲存！");
+    return true;
+  }
+  document.getElementById("btnSave").onclick=saveMe;
+
+  // ---- results ----
+  function renderResults(){
+    // days
+    const counts={};
+    for(const p in store.people){ (store.people[p].days||[]).forEach(d=>{ (counts[d]=counts[d]||[]).push(p); }); }
+    const dr=document.getElementById("dayResults");
+    const total=Object.keys(store.people).length;
+    const arr=Object.keys(counts).map(Number).sort((a,b)=>counts[b].length-counts[a].length || a-b);
+    if(!arr.length){ dr.innerHTML='<p class="small">未有人揀日子。</p>'; }
+    else{
+      const max=counts[arr[0]].length;
+      dr.innerHTML=arr.map(d=>{
+        const ppl=counts[d]; const pct=Math.round(ppl.length/Math.max(total,1)*100);
+        const wd=DOW[new Date(YEAR,MONTH-1,d).getDay()];
+        return `<div class="barrow ${ppl.length===max?'top':''}">
+          <span class="barlbl">8/${d}（${wd}）</span>
+          <span class="bartrack"><span class="barfill" style="width:${Math.max(pct,12)}%">${ppl.length}人</span></span>
+        </div><div class="who">　${ppl.join("、")}</div>`;
+      }).join("");
+    }
+    // taste
+    const tr=document.getElementById("tasteResults");
+    if(!total){ tr.innerHTML='<p class="small">未有人填口味。</p>'; }
+    else{
+      const cu={}; let str={}, sp={};
+      for(const p in store.people){
+        (store.people[p].cuisines||[]).forEach(c=>cu[c]=(cu[c]||0)+1);
+        const s=store.people[p].strength; if(s) str[s]=(str[s]||0)+1;
+        const x=store.people[p].spice; if(x) sp[x]=(sp[x]||0)+1;
+      }
+      const top=Object.keys(cu).sort((a,b)=>cu[b]-cu[a]);
+      let html=`<p class="small" style="margin:0 0 8px">已填：${total} 人</p>`;
+      html+=`<div style="margin-bottom:10px"><b>🍜 熱門菜系</b><br>`;
+      html+= top.length? top.map(c=>`<span class="pill">${c} ·${cu[c]}</span>`).join("") : '<span class="small">—</span>';
+      html+=`</div>`;
+      const fmt=o=>Object.keys(o).map(k=>`<span class="pill">${k} ·${o[k]}</span>`).join("")||'<span class="small">—</span>';
+      html+=`<div style="margin-bottom:8px"><b>濃淡</b><br>${fmt(str)}</div>`;
+      html+=`<div style="margin-bottom:8px"><b>辣度</b><br>${fmt(sp)}</div>`;
+      const diets=[];
+      for(const p in store.people){ if((store.people[p].diet||"").trim()) diets.push(`${p}：${store.people[p].diet}`); }
+      if(diets.length) html+=`<div class="note">⚠️ 飲食需要<br>${diets.join("<br>")}</div>`;
+      tr.innerHTML=html;
+    }
+  }
+
+  // ---- restaurants ----
+  const RESTOS = {
+    hk:[
+      {nm:"泰麵 Thai Mae",cuisine:"泰國菜",area:"銅鑼灣",tag:["小辣","平民"]},
+      {nm:"Sushi 廚師發辦 · 中環店",cuisine:"Omakase",area:"中環",tag:["日本菜","靚位"]},
+      {nm:"添好運",cuisine:"中菜 · 點心",area:"灣仔",tag:["淡口味","老少咸宜"]},
+      {nm:"韓燒 K-Town",cuisine:"韓國菜",area:"銅鑼灣",tag:["重口味","熱鬧"]},
+      {nm:"Pici 手工意粉",cuisine:"意大利菜",area:"星街",tag:["西餐","打卡"]},
+      {nm:"麥當勞（時代廣場）",cuisine:"快餐",area:"銅鑼灣",tag:["快","平"]},
+    ],
+    kln:[
+      {nm:"Spicy 印度咖喱屋",cuisine:"印度菜",area:"尖沙咀",tag:["大辣","重口味"]},
+      {nm:"越式 Pho 河粉店",cuisine:"越南菜",area:"佐敦",tag:["淡口味","清新"]},
+      {nm:"和食 Omakase · 尖沙咀",cuisine:"Omakase",area:"尖沙咀",tag:["日本菜","靚位"]},
+      {nm:"潮樓火鍋",cuisine:"火鍋",area:"旺角",tag:["中辣","熱鬧"]},
+      {nm:"美式扒房 The Grill",cuisine:"扒房",area:"尖沙咀",tag:["西餐","慶祝"]},
+      {nm:"KFC（朗豪坊）",cuisine:"快餐",area:"旺角",tag:["快","平"]},
+    ],
+    nt:[
+      {nm:"泰式船河 · 沙田",cuisine:"泰國菜",area:"沙田",tag:["小辣","抵食"]},
+      {nm:"日式放題 Buffet",cuisine:"日本菜",area:"荃灣",tag:["任食","抵"]},
+      {nm:"圍村盆菜館",cuisine:"中菜",area:"元朗",tag:["大件夾抵食","傳統"]},
+      {nm:"韓式炸雞店",cuisine:"韓國菜",area:"屯門",tag:["重口味","下酒"]},
+      {nm:"意式 Pizza 窯烤",cuisine:"意大利菜",area:"沙田",tag:["西餐","family"]},
+      {nm:"麥當勞（新城市廣場）",cuisine:"快餐",area:"沙田",tag:["快","平"]},
+    ]
+  };
+  let curRegion="hk";
+  function renderRestos(){
+    const el=document.getElementById("restoList");
+    el.innerHTML=RESTOS[curRegion].map(r=>`
+      <div class="resto"><div class="nm">${r.nm}</div>
+      <div class="meta">📍 ${r.area} · ${r.cuisine}</div>
+      <div style="margin-top:6px">${r.tag.map(t=>`<span class="tag">${t}</span>`).join("")}</div></div>`).join("");
+  }
+  document.querySelectorAll(".region-tabs button").forEach(b=>{
+    b.onclick=()=>{ document.querySelectorAll(".region-tabs button").forEach(x=>x.classList.remove("on"));
+      b.classList.add("on"); curRegion=b.dataset.r; renderRestos(); };
+  });
+
+  // ---- final date dropdown ----
+  function renderFinalDates(){
+    const sel=document.getElementById("finalDate");
+    const counts={};
+    for(const p in store.people){ (store.people[p].days||[]).forEach(d=>counts[d]=(counts[d]||0)+1); }
+    const arr=Object.keys(counts).map(Number).sort((a,b)=>counts[b]-counts[a]||a-b);
+    const prev=sel.value;
+    if(!arr.length){
+      sel.innerHTML=Array.from({length:daysInMonth},(_,i)=>i+1).map(d=>{
+        const wd=DOW[new Date(YEAR,MONTH-1,d).getDay()];
+        return `<option value="${d}">8月${d}日（${wd}）</option>`;}).join("");
+    } else {
+      sel.innerHTML=arr.map(d=>{
+        const wd=DOW[new Date(YEAR,MONTH-1,d).getDay()];
+        return `<option value="${d}">8月${d}日（${wd}） · ${counts[d]}人得閒</option>`;}).join("");
+    }
+    if(prev) sel.value=prev;
+  }
+
+  // ---- email / calendar / ics ----
+  function finalInfo(){
+    const d=+document.getElementById("finalDate").value||1;
+    const timeRaw=document.getElementById("finalTime").value;
+    const hh=parseInt(timeRaw.slice(0,2),10);
+    const mm=parseInt(timeRaw.slice(3,5),10);
+    const place=document.getElementById("finalPlace").value.trim()||"（餐廳待定）";
+    const wd=DOW[new Date(YEAR,MONTH-1,d).getDay()];
+    return {d,hh,mm,timeRaw,place,wd};
+  }
+  function pad(n){return String(n).padStart(2,"0");}
+
+  document.getElementById("btnEmail").onclick=()=>{
+    const f=finalInfo();
+    const to=document.getElementById("finalEmails").value.trim();
+    const subj=`🎂 8月生日飯局：8月${f.d}日（${f.wd}）${f.timeRaw}`;
+    const cuTop=(()=>{const cu={};for(const p in store.people)(store.people[p].cuisines||[]).forEach(c=>cu[c]=(cu[c]||0)+1);
+      return Object.keys(cu).sort((a,b)=>cu[b]-cu[a]).slice(0,3).join("、")||"待定";})();
+    const body=
+`Hello 各位壽星同朋友 👋
+
+夾好喇！一齊食個飯慶祝 8 月生日 🎂
+
+📅 日期：8月${f.d}日（星期${f.wd}）
+🕐 時間：${f.timeRaw}
+📍 地點：${f.place}
+🍜 大家最想食：${cuTop}
+
+記得覆返得唔得閒呀！加埋落你嘅行事曆～
+
+（呢個 invitation 由我哋嘅生日飯局網頁整）`;
+    const link=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+    window.location.href=link;
+    toast("📧 開緊 email…");
+  };
+
+  document.getElementById("btnCal").onclick=()=>{
+    const f=finalInfo();
+    const start=new Date(YEAR,MONTH-1,f.d,f.hh,f.mm);
+    const end=new Date(start.getTime()+2*3600*1000);
+    const fmt=dt=>`${dt.getFullYear()}${pad(dt.getMonth()+1)}${pad(dt.getDate())}T${pad(dt.getHours())}${pad(dt.getMinutes())}00`;
+    const title=`🎂 8月生日飯局`;
+    const details=`一齊食飯慶祝8月生日！地點：${f.place}`;
+    const url=`https://www.google.com/calendar/render?action=TEMPLATE`+
+      `&text=${encodeURIComponent(title)}`+
+      `&dates=${fmt(start)}/${fmt(end)}`+
+      `&details=${encodeURIComponent(details)}`+
+      `&location=${encodeURIComponent(f.place)}`+
+      `&ctz=Asia/Hong_Kong`;
+    window.open(url,"_blank");
+    toast("📆 開緊 Google Calendar…");
+  };
+
+  document.getElementById("btnIcs").onclick=()=>{
+    const f=finalInfo();
+    const start=new Date(YEAR,MONTH-1,f.d,f.hh,f.mm);
+    const end=new Date(start.getTime()+2*3600*1000);
+    const fmt=dt=>`${dt.getFullYear()}${pad(dt.getMonth()+1)}${pad(dt.getDate())}T${pad(dt.getHours())}${pad(dt.getMinutes())}00`;
+    const ics=`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//aug-bday//HK//
+BEGIN:VEVENT
+UID:${Date.now()}@augbday
+DTSTART;TZID=Asia/Hong_Kong:${fmt(start)}
+DTEND;TZID=Asia/Hong_Kong:${fmt(end)}
+SUMMARY:🎂 8月生日飯局
+LOCATION:${f.place}
+DESCRIPTION:一齊食飯慶祝8月生日！
+END:VEVENT
+END:VCALENDAR`;
+    const blob=new Blob([ics],{type:"text/calendar"});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+    a.download=`生日飯局-8月${f.d}日.ics`; a.click();
+    toast("⬇️ 已下載 .ics");
+  };
+
+  // ---- export / import merge ----
+  document.getElementById("btnExport").onclick=()=>{
+    if(!saveMe()) return;
+    const payload=JSON.stringify({[me.name]:store.people[me.name]});
+    navigator.clipboard.writeText(payload).then(()=>toast("📤 已複製，send 俾朋友啦！"),
+      ()=>{ prompt("複製以下文字 send 俾朋友：",payload); });
+  };
+  document.getElementById("btnImport").onclick=()=>{
+    const txt=prompt("貼上朋友 send 過嚟嘅文字：");
+    if(!txt) return;
+    try{
+      const data=JSON.parse(txt);
+      Object.assign(store.people,data);
+      persist(); renderResults(); renderCal(); renderFinalDates();
+      toast("📥 已合併！");
+    }catch(e){ toast("⚠️ 格式唔啱"); }
+  };
+
+  // ---- init ----
+  renderCal(); renderResults(); renderRestos(); renderFinalDates();
+})();
+</script>
+</body>
+</html>
